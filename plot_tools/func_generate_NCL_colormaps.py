@@ -58,7 +58,7 @@ def __collect_discrete_NCL_cmap(cmapname):
             if info[0]=='' and len(info)>=3:
                 cmap_color_list.append((int(info[1])/255, int(info[2])/255, int(info[3])/255))
 
-        if info[0]=='ncolors':
+        if 'color' in str(info[0]):
             color_section_sig = 1  # meaning now we are at color lines (or "r g b" line)
 
     return cmap_color_list
