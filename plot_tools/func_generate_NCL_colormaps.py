@@ -42,33 +42,35 @@ def __retrive_NCL_webcontent(cmapname):
     return request
 
 
-def __collect_discrete_NCL_cmap(cmapname):
+def __collect_discrete_NCL_cmap_debug(cmapname):
     rawdata = __retrive_NCL_webcontent(cmapname)
-
+    
     cmap_color_list = list()
-
+    
     color_section_sig = 0
-
+    
     for line in rawdata:
-
+        
         line_decode = line.decode('utf-8')
-        info = re.split('\s+', line_decode.replace('\n',''))
+        info = re.split('\s+', line_decode.replace('\n','').replace('^\s+',''))
 
         if color_section_sig==1:
             if info[0]=='' and len(info)>=3:
-                if float(info[1])>1:
+                if np.maximum(np.maximum(float(info[1]), float(info[2])), float(info[3]))>1:
                     cmap_color_list.append((float(info[1])/255, float(info[2])/255, float(info[3])/255))
                 else:
                     cmap_color_list.append((float(info[1]), float(info[2]), float(info[3])))
             if len(info)==3:
-                if float(info[0])>1:
-                    cmap_color_list.append((float(info[0])/255, float(info[1])/255, float(info[2])/255))
+                if ';' in info[0] or '#' in info[0]:
+                    whatisthis = 's'
                 else:
-                    cmap_color_list.append((float(info[0]), float(info[1]), float(info[2])))
-
+                    if np.maximum(np.maximum(float(info[0]), float(info[1])), float(info[2]))>1:
+                        cmap_color_list.append((float(info[0])/255, float(info[1])/255, float(info[2])/255))
+                    else:
+                        cmap_color_list.append((float(info[0]), float(info[1]), float(info[2])))
+        
         if 'ncolors' in str(info[0]):
             color_section_sig = 1  # meaning now we are at color lines (or "r g b" line)
-
 
     return cmap_color_list
 
