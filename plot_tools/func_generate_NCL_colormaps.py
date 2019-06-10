@@ -42,7 +42,7 @@ def __retrive_NCL_webcontent(cmapname):
     return request
 
 
-def __collect_discrete_NCL_cmap_debug(cmapname):
+def __collect_discrete_NCL_cmap(cmapname):
     rawdata = __retrive_NCL_webcontent(cmapname)
     
     cmap_color_list = list()
