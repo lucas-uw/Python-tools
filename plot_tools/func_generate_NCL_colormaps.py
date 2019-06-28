@@ -92,18 +92,33 @@ def __cmap_refinement(raw_cmap_rgb, n_interpolate=10, workspace=color_obj_dict['
 
 
 def generate_NCL_cmap(cmapname, cont_opt=False, cont_param_n=10, cont_param_ws='sRGB',
-                      white_first=False):
+                      white_first=False, white_ext=False, reverse_cmap=False):
     # description:
-    #     main function to call.
     #     cmapname:      taken as shown on the NCL website
     #     cont_opt:      to convert the discreate colormap to continuous colormap
     #     cont_param_n:  how many "intermediate" colors to be inserted to the nearby discreate colors
     #     cont_param_ws: color space to conduct interploation. Default to "sRGB", which should work for most cases
     #     white_first:   whether to set the first color as white. May be useful if the minimum does not mean anything
+    #     white_ext:     whether to add this above white as an extended color (when set to True), or just replace the first color (when set to False).
+    #     reverse_cmap:  similar to "_r" in colormap.
+    # note:  reverse_cmap is applied first, then white_first option.
 
-    cmap_discrete = __collect_discrete_NCL_cmap(cmapname)
+    cmap_discrete_raw = __collect_discrete_NCL_cmap(cmapname)
+
+    if reverse_cmap==True:
+        cmap_discrete_raw.reverse()
+
     if white_first==True:
+        if white_ext==True:
+            cmap_discrete = list()
+            cmap_discrete.append((1,1,1))
+            for i in np.arange(len(cmap_discrete_raw)):
+                cmap_discrete.append(cmap_discrete_raw[int(i)])
+        else:
+            cmap_discrete = cmap_discrete_raw.copy()
         cmap_discrete[0] = (1,1,1)
+    else:
+        cmap_discrete = cmap_discrete_raw
 
     if cont_opt==False:
         out_cmap = cmap_discrete
